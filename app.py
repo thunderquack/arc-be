@@ -1,9 +1,10 @@
 from flask import Flask, request, jsonify
 import jwt
 import datetime
+import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
 
 @app.route('/api/login', methods=['POST'])
 def login():
