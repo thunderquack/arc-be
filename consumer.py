@@ -1,20 +1,17 @@
-import pika
-import os
+from rabbitmq_utils import get_rabbitmq_connection, declare_queues
+import threading
 
-RABBITMQ_URL = 'amqp://guest:guest@localhost:5672/'
+def consume_events(queue_name, callback):
+    connection, channel = get_rabbitmq_connection()
+    declare_queues(channel)
+    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    print(f'Waiting for {queue_name} events. To exit press CTRL+C')
+    channel.start_consuming()
 
-def get_rabbitmq_connection():
-    parameters = pika.URLParameters(RABBITMQ_URL)
-    return pika.BlockingConnection(parameters)
-
-def callback(ch, method, properties, body):
+def login_events_callback(ch, method, properties, body):
     print(f"Received login event: {body}")
 
-def consume_login_events():
-    connection = get_rabbitmq_connection()
-    channel = connection.channel()
-    channel.queue_declare(queue='login_events')
-
-    channel.basic_consume(queue='login_events', on_message_callback=callback, auto_ack=True)
-    print('Waiting for login events. To exit press CTRL+C')
-    channel.start_consuming()
+if __name__ == '__main__':
+    connection, channel = get_rabbitmq_connection()
+    declare_queues(channel)
+    connection.close()
