@@ -14,8 +14,7 @@ CORS(app)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
 
-# Invalid! 
-redis_client = redis.StrictRedis(host='host.docker.internal', port=6379, db=1, decode_responses=True)
+redis_client = redis.StrictRedis(host='redis', port=6379, db=1, decode_responses=True)
 
 def token_required(f):
     @wraps(f)
@@ -40,7 +39,14 @@ def token_required(f):
     return decorated
 
 def revoke_token(token):
-    redis_client.set(token, 'revoked', ex=3600)  # токен в черном списке в течение часа
+    try:
+        data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+        exp = data['exp']
+        current_time = datetime.datetime.now(datetime.UTC).timestamp()
+        ttl = exp - current_time
+        redis_client.set(token, 'revoked', ex=int(ttl))
+    except jwt.InvalidTokenError:
+        pass
 
 @app.route('/api/login', methods=['POST'])
 def login():
