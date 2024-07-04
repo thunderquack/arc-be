@@ -9,10 +9,15 @@ import redis
 from consumer import consume_events, login_events_callback
 from producer import send_login_event
 
+import ptvsd
+
 app = Flask(__name__)
 CORS(app)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
+
+ptvsd.enable_attach(address=('0.0.0.0', 5678))
+print("ptvsd enabled and waiting for attach...")
 
 redis_client = redis.StrictRedis(host='redis', port=6379, db=1, decode_responses=True)
 
