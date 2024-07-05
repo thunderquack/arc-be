@@ -1,1 +1,9 @@
-Generic single-database configuration.
+# Generic single-database configuration.
+
+## Migration creation
+
+alembic revision --autogenerate -m "user table"
+
+## Updating the database
+
+alembic upgrade head
