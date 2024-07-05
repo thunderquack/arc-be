@@ -16,6 +16,7 @@ def create_user(username, password):
     new_user = User(username=username, password_hash=password_hash)
     session.add(new_user)
     session.commit()
+    print(f'User {username} was created.')
 
 if __name__ == '__main__':
     import sys
