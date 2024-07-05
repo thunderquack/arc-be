@@ -6,8 +6,12 @@ import datetime
 import os
 from flask_cors import CORS
 import redis
-from consumer import consume_events, login_events_callback
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from models import Base, User
+from werkzeug.security import check_password_hash
 from producer import send_login_event
+from consumer import consume_events, login_events_callback
 
 import ptvsd
 
@@ -17,6 +21,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://arcuser:password@arc-db/arcdb')
 
 # Enable ptvsd on 0.0.0.0 address and port 5678 that we'll connect later with our IDE
 ptvsd.enable_attach(address=('0.0.0.0', 5678))
@@ -24,6 +29,12 @@ print("ptvsd enabled and waiting for attach...")
 
 # Настройка Redis для хранения черного списка токенов
 redis_client = redis.StrictRedis(host='redis', port=6379, db=1, decode_responses=True)
+
+# Создаем подключение к базе данных
+engine = create_engine(DATABASE_URL)
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 def token_required(f):
     @wraps(f)
@@ -63,7 +74,9 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    if username == 'user' and password == 'password':
+    user = session.query(User).filter_by(username=username).first()
+
+    if user and check_password_hash(user.password_hash, password):
         token = jwt.encode({
             'user': username,
             'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
