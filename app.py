@@ -12,13 +12,17 @@ from producer import send_login_event
 import ptvsd
 
 app = Flask(__name__)
-CORS(app)
+
+# Настройка CORS: Разрешить все источники (для разработки)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default_secret_key')
 
+# Enable ptvsd on 0.0.0.0 address and port 5678 that we'll connect later with our IDE
 ptvsd.enable_attach(address=('0.0.0.0', 5678))
 print("ptvsd enabled and waiting for attach...")
 
+# Настройка Redis для хранения черного списка токенов
 redis_client = redis.StrictRedis(host='redis', port=6379, db=1, decode_responses=True)
 
 def token_required(f):
@@ -51,7 +55,7 @@ def revoke_token(token):
         ttl = exp - current_time
         redis_client.set(token, 'revoked', ex=int(ttl))
     except jwt.InvalidTokenError:
-        pass
+        pass  # Если токен недействителен, мы просто игнорируем его
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -66,7 +70,6 @@ def login():
         }, app.config['SECRET_KEY'], algorithm="HS256")
 
         send_login_event(username)
-
         return jsonify({'token': token})
 
     return jsonify({'message': 'Invalid credentials'}), 401
