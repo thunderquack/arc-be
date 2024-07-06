@@ -6,7 +6,7 @@ from database.setup import setup_database
 from database.config import DATABASE_URL
 from database.models import User, Role
 from messaging.producer import send_login_event
-from routes.utils import token_required
+from routes.utils import roles_required, token_required
 
 auth_bp = Blueprint('auth', __name__)
 session = setup_database(DATABASE_URL)
@@ -34,12 +34,19 @@ def login():
 
 @auth_bp.route('/api/logout', methods=['POST'])
 @token_required
-def logout(user):
+def logout(data):
     token = request.headers['x-access-token']
     # revoke_token(token)
     return jsonify({'message': 'Logged out successfully'}), 200
 
 @auth_bp.route('/api/protected', methods=['GET'])
 @token_required
-def protected_route(user):
-    return jsonify({'message': f'Hello, {user}! This is a protected route.'})
+@roles_required('user')
+def protected_route(data):
+    return jsonify({'message': f'Hello, {data["user"]}! This is a protected route accessible only to users with the "user" role.'})
+
+@auth_bp.route('/api/admin', methods=['GET'])
+@token_required
+@roles_required('admin')
+def admin_route(data):
+    return jsonify({'message': f'Hello, {data["user"]}! This is a protected route accessible only to users with the "admin" role.'})
