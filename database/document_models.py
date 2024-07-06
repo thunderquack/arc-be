@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, LargeBinary, Text, UniqueConstraint
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, LargeBinary, Table, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -28,6 +28,9 @@ class Document(DocumentBase):
     
     # Relationship with attributes
     attributes = relationship('DocumentAttribute', back_populates='document')
+    
+    # Relationship with roles
+    #roles = relationship('Role', secondary='document_roles', back_populates='documents')
 
 # Document page
 class Page(DocumentBase):
@@ -96,3 +99,12 @@ class DocumentAttribute(DocumentBase):
     __table_args__ = (
         UniqueConstraint('document_id', 'attribute_id', name='unique_document_attribute'),
     )
+
+# Linking table for documents and roles
+#document_roles = Table('document_roles', DocumentBase.metadata,
+#    # Document identifier
+#    Column('document_id', UUID(as_uuid=True), ForeignKey('documents.id'), primary_key=True),
+#    
+#    # Role identifier
+#    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
+#)

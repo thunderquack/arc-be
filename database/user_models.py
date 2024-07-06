@@ -38,6 +38,25 @@ class Role(UserBase):
     
     # Relationship with users
     users = relationship('User', secondary='user_roles', back_populates='roles')
+    
+    # Relationship with permissions
+    permissions = relationship('Permission', secondary='role_permissions', back_populates='roles')
+
+    def __init__(self, name):
+        self.name = name
+
+# Permission
+class Permission(UserBase):
+    __tablename__ = 'permissions'
+
+    # Unique permission identifier
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # Unique permission name
+    name = Column(String(50), unique=True, nullable=False)
+    
+    # Relationship with roles
+    roles = relationship('Role', secondary='role_permissions', back_populates='permissions')
 
     def __init__(self, name):
         self.name = name
@@ -49,4 +68,13 @@ user_roles = Table('user_roles', UserBase.metadata,
     
     # Role identifier
     Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
+)
+
+# Linking table for roles and permissions
+role_permissions = Table('role_permissions', UserBase.metadata,
+    # Role identifier
+    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True),
+    
+    # Permission identifier
+    Column('permission_id', UUID(as_uuid=True), ForeignKey('permissions.id'), primary_key=True)
 )
