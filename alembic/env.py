@@ -10,6 +10,7 @@ import sys
 # Подключение вашего приложения и моделей
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from database.user_models import UserBase
+from database.document_models import DocumentBase
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -21,7 +22,7 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-target_metadata = UserBase.metadata
+target_metadata = [UserBase.metadata, DocumentBase.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -31,6 +32,7 @@ target_metadata = UserBase.metadata
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
+
     This configures the context with just a URL
     and not an Engine, though an Engine is acceptable
     here as well. By skipping the Engine creation
@@ -63,7 +65,8 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata
         )
 
         with context.begin_transaction():
