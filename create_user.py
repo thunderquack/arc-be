@@ -1,10 +1,8 @@
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database.models import Base, User
 from werkzeug.security import generate_password_hash
-
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://arcuser:password@arc-db/arcdb')
+from database.models import Base, User
+from database.config import DATABASE_URL
 
 engine = create_engine(DATABASE_URL)
 Base.metadata.create_all(engine)
