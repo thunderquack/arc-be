@@ -1,5 +1,3 @@
-# routes/utils.py
-
 import datetime
 from functools import wraps
 from flask import request, jsonify, current_app
@@ -24,6 +22,18 @@ def token_required(f):
         
         return f(data, *args, **kwargs)
     return decorated
+
+def roles_required(*roles):
+    def wrapper(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            data = args[0]  # Данные из декодированного токена
+            user_roles = data.get('roles', [])
+            if not any(role in user_roles for role in roles):
+                return jsonify({'message': 'You do not have the required role to access this resource.'}), 403
+            return f(*args, **kwargs)
+        return decorated
+    return wrapper
 
 def revoke_token(token):
     try:
