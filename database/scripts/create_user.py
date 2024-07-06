@@ -5,7 +5,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from sqlalchemy.orm import sessionmaker
 from werkzeug.security import generate_password_hash
 from database.setup import setup_database
-from database.models import User, Role
+from database.user_models import User, Role
 from database.config import DATABASE_URL
 
 def create_user(username, password, roles):

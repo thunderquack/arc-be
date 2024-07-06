@@ -6,7 +6,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 
 from sqlalchemy.orm import sessionmaker
 from database.setup import setup_database
-from database.models import Role, User
+from database.user_models import Role, User
 from werkzeug.security import generate_password_hash
 
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://arcuser:password@arc-db/arcdb')

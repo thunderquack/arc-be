@@ -4,9 +4,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+UserBase = declarative_base()
 
-class User(Base):
+class User(UserBase):
     __tablename__ = 'users'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -19,7 +19,7 @@ class User(Base):
         self.password_hash = password_hash
 
 
-class Role(Base):
+class Role(UserBase):
     __tablename__ = 'roles'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -30,7 +30,7 @@ class Role(Base):
         self.name = name
 
 
-user_roles = Table('user_roles', Base.metadata,
+user_roles = Table('user_roles', UserBase.metadata,
     Column('user_id', UUID(as_uuid=True), ForeignKey('users.id'), primary_key=True),
     Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
 )

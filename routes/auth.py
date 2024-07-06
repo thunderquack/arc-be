@@ -4,7 +4,7 @@ import jwt
 import datetime
 from database.setup import setup_database
 from database.config import DATABASE_URL
-from database.models import User, Role
+from database.user_models import User, Role
 from messaging.producer import send_login_event
 from routes.utils import roles_required, token_required
 
