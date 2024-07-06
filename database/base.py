@@ -108,6 +108,7 @@ document_roles = Table('document_roles', Base.metadata,
     Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
 )
 
+### USERS
 
 # User
 class User(Base):
