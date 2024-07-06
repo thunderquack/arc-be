@@ -30,7 +30,7 @@ class Document(DocumentBase):
     attributes = relationship('DocumentAttribute', back_populates='document')
     
     # Relationship with roles
-    #roles = relationship('Role', secondary='document_roles', back_populates='documents')
+    roles = relationship('Role', secondary='document_roles', back_populates='documents')
 
 # Document page
 class Page(DocumentBase):
@@ -101,10 +101,10 @@ class DocumentAttribute(DocumentBase):
     )
 
 # Linking table for documents and roles
-#document_roles = Table('document_roles', DocumentBase.metadata,
-#    # Document identifier
-#    Column('document_id', UUID(as_uuid=True), ForeignKey('documents.id'), primary_key=True),
-#    
-#    # Role identifier
-#    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
-#)
+document_roles = Table('document_roles', DocumentBase.metadata,
+    # Document identifier
+    Column('document_id', UUID(as_uuid=True), ForeignKey('documents.id'), primary_key=True),
+    
+    # Role identifier
+    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
+)
