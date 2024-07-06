@@ -8,7 +8,7 @@ from flask_cors import CORS
 import redis
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, User
+from database.models import Base, User
 from werkzeug.security import check_password_hash
 from producer import send_login_event
 from consumer import consume_events, login_events_callback
