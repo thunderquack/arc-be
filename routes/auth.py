@@ -4,7 +4,7 @@ import jwt
 import datetime
 from database.setup import setup_database
 from database.config import DATABASE_URL
-from database.models import User
+from database.models import User, Role
 from messaging.producer import send_login_event
 from routes.utils import token_required
 
@@ -20,8 +20,10 @@ def login():
     user = session.query(User).filter_by(username=username).first()
 
     if user and check_password_hash(user.password_hash, password):
+        roles = [role.name for role in user.roles]
         token = jwt.encode({
             'user': username,
+            'roles': roles,
             'exp': datetime.datetime.now(datetime.UTC) + datetime.timedelta(hours=1)
         }, current_app.config['SECRET_KEY'], algorithm="HS256")
 
@@ -34,7 +36,7 @@ def login():
 @token_required
 def logout(user):
     token = request.headers['x-access-token']
-    #revoke_token(token)
+    # revoke_token(token)
     return jsonify({'message': 'Logged out successfully'}), 200
 
 @auth_bp.route('/api/protected', methods=['GET'])

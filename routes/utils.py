@@ -1,3 +1,5 @@
+# routes/utils.py
+
 import datetime
 from functools import wraps
 from flask import request, jsonify, current_app
@@ -20,7 +22,7 @@ def token_required(f):
         except jwt.InvalidTokenError:
             return jsonify({'message': 'Invalid token!'}), 401
         
-        return f(data['user'], *args, **kwargs)
+        return f(data, *args, **kwargs)
     return decorated
 
 def revoke_token(token):
@@ -29,6 +31,6 @@ def revoke_token(token):
         exp = data['exp']
         current_time = datetime.datetime.now(datetime.UTC).timestamp()
         ttl = exp - current_time
-#        redis_client.set(token, 'revoked', ex=int(ttl))
+        # redis_client.set(token, 'revoked', ex=int(ttl))
     except jwt.InvalidTokenError:
         pass  # Если токен недействителен, мы просто игнорируем его
