@@ -28,8 +28,8 @@ class Document(Base):
     # Relationship with attributes
     attributes = relationship('DocumentAttribute', back_populates='document')
     
-    # Relationship with roles
-    roles = relationship('Role', secondary='document_roles', back_populates='documents')
+    # Relationship with permissions
+    permissions = relationship('Permission', secondary='document_permissions', back_populates='documents')
 
 # Document page
 class Page(Base):
@@ -99,13 +99,13 @@ class DocumentAttribute(Base):
         UniqueConstraint('document_id', 'attribute_id', name='unique_document_attribute'),
     )
 
-# Linking table for documents and roles
-document_roles = Table('document_roles', Base.metadata,
+# Linking table for documents and permissions
+document_permissions = Table('document_permissions', Base.metadata,
     # Document identifier
     Column('document_id', UUID(as_uuid=True), ForeignKey('documents.id'), primary_key=True),
     
-    # Role identifier
-    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
+    # Permission identifier
+    Column('permission_id', UUID(as_uuid=True), ForeignKey('permissions.id'), primary_key=True)
 )
 
 ### USERS
@@ -161,6 +161,9 @@ class Permission(Base):
     
     # Relationship with roles
     roles = relationship('Role', secondary='role_permissions', back_populates='permissions')
+    
+    # Relationship with documents
+    documents = relationship('Document', secondary='document_permissions', back_populates='permissions')
 
     def __init__(self, name):
         self.name = name
@@ -182,4 +185,3 @@ role_permissions = Table('role_permissions', Base.metadata,
     # Permission identifier
     Column('permission_id', UUID(as_uuid=True), ForeignKey('permissions.id'), primary_key=True)
 )
-

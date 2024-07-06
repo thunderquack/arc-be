@@ -3,6 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 from database.config import SECRET_KEY
 from routes.auth import auth_bp
+from routes.document import document_bp
 from messaging.consumer import consume_events, login_events_callback
 
 app = Flask(__name__)
@@ -13,6 +14,7 @@ CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 app.config['SECRET_KEY'] = SECRET_KEY
 
 app.register_blueprint(auth_bp)
+app.register_blueprint(document_bp)
 
 if __name__ == '__main__':
     threading.Thread(target=lambda: consume_events('login_events', login_events_callback), daemon=True).start()
