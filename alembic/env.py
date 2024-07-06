@@ -9,8 +9,7 @@ import sys
 
 # Подключение вашего приложения и моделей
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from database.user_models import UserBase
-from database.document_models import DocumentBase
+from database.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,26 +21,13 @@ fileConfig(config.config_file_name)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from sqlalchemy import MetaData
-
-# Create a single metadata object that combines both bases
-combined_metadata = MetaData()
-UserBase.metadata.reflect(bind=engine_from_config(config.get_section(config.config_ini_section)))
-DocumentBase.metadata.reflect(bind=engine_from_config(config.get_section(config.config_ini_section)))
-
-for t in UserBase.metadata.tables.values():
-    t.tometadata(combined_metadata)
-
-for t in DocumentBase.metadata.tables.values():
-    t.tometadata(combined_metadata)
-
-# target_metadata = [UserBase.metadata, DocumentBase.metadata]
-target_metadata = combined_metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.

@@ -1,14 +1,13 @@
+import datetime
 import uuid
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, LargeBinary, Table, Text, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import UUID, Column, DateTime, ForeignKey, Integer, LargeBinary, String, Table, Text, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-import datetime
 
-DocumentBase = declarative_base()
+Base = declarative_base()
 
 # Document
-class Document(DocumentBase):
+class Document(Base):
     __tablename__ = 'documents'
     
     # Unique document identifier
@@ -33,7 +32,7 @@ class Document(DocumentBase):
     roles = relationship('Role', secondary='document_roles', back_populates='documents')
 
 # Document page
-class Page(DocumentBase):
+class Page(Base):
     __tablename__ = 'pages'
     
     # Unique page identifier
@@ -59,7 +58,7 @@ class Page(DocumentBase):
     )
 
 # Document attribute
-class Attribute(DocumentBase):
+class Attribute(Base):
     __tablename__ = 'attributes'
     
     # Unique attribute identifier
@@ -75,7 +74,7 @@ class Attribute(DocumentBase):
     document_attributes = relationship('DocumentAttribute', back_populates='attribute')
 
 # Document attribute value
-class DocumentAttribute(DocumentBase):
+class DocumentAttribute(Base):
     __tablename__ = 'document_attributes'
     
     # Unique document attribute identifier
@@ -101,10 +100,85 @@ class DocumentAttribute(DocumentBase):
     )
 
 # Linking table for documents and roles
-document_roles = Table('document_roles', DocumentBase.metadata,
+document_roles = Table('document_roles', Base.metadata,
     # Document identifier
     Column('document_id', UUID(as_uuid=True), ForeignKey('documents.id'), primary_key=True),
     
     # Role identifier
     Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
 )
+
+
+# User
+class User(Base):
+    __tablename__ = 'users'
+
+    # Unique user identifier
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # Unique username
+    username = Column(String(50), unique=True, nullable=False)
+    
+    # User's password hash
+    password_hash = Column(String(256), nullable=False)
+    
+    # Relationship with roles
+    roles = relationship('Role', secondary='user_roles', back_populates='users')
+
+    def __init__(self, username, password_hash):
+        self.username = username
+        self.password_hash = password_hash
+
+# User role
+class Role(Base):
+    __tablename__ = 'roles'
+
+    # Unique role identifier
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # Unique role name
+    name = Column(String(50), unique=True, nullable=False)
+    
+    # Relationship with users
+    users = relationship('User', secondary='user_roles', back_populates='roles')
+    
+    # Relationship with permissions
+    permissions = relationship('Permission', secondary='role_permissions', back_populates='roles')
+
+    def __init__(self, name):
+        self.name = name
+
+# Permission
+class Permission(Base):
+    __tablename__ = 'permissions'
+
+    # Unique permission identifier
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    
+    # Unique permission name
+    name = Column(String(50), unique=True, nullable=False)
+    
+    # Relationship with roles
+    roles = relationship('Role', secondary='role_permissions', back_populates='permissions')
+
+    def __init__(self, name):
+        self.name = name
+
+# Linking table for users and roles
+user_roles = Table('user_roles', Base.metadata,
+    # User identifier
+    Column('user_id', UUID(as_uuid=True), ForeignKey('users.id'), primary_key=True),
+    
+    # Role identifier
+    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True)
+)
+
+# Linking table for roles and permissions
+role_permissions = Table('role_permissions', Base.metadata,
+    # Role identifier
+    Column('role_id', UUID(as_uuid=True), ForeignKey('roles.id'), primary_key=True),
+    
+    # Permission identifier
+    Column('permission_id', UUID(as_uuid=True), ForeignKey('permissions.id'), primary_key=True)
+)
+
