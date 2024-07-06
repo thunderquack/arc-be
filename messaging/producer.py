@@ -1,4 +1,5 @@
-from rabbitmq_utils import get_rabbitmq_connection, declare_queues
+from database.config import DATABASE_URL
+from messaging.utils import get_rabbitmq_connection, declare_queues
 import datetime
 
 def send_message_to_queue(queue_name, message):
@@ -13,8 +14,3 @@ def send_message_to_queue(queue_name, message):
 def send_login_event(username):
     message = f'User {username} logged in at {datetime.datetime.utcnow()}'
     send_message_to_queue('login_events', message)
-
-# Объявляем очереди при запуске модуля
-connection, channel = get_rabbitmq_connection()
-declare_queues(channel)
-connection.close()
