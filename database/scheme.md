@@ -67,7 +67,7 @@ erDiagram
         UUID role_id PK FK
     }
 
-    User ||--o{ Document : "documents"
+    User ||--o{ Document : "created_by"
     User ||--o{ user_roles : ""
     Role ||--o{ user_roles : ""
     Role ||--o{ role_permissions : ""
@@ -80,4 +80,5 @@ erDiagram
     DocumentAttribute }o--|| Document : "document_id"
     DocumentAttribute }o--|| Attribute : "attribute_id"
     Permission ||--o{ document_permissions : ""
+
 ```
