@@ -19,6 +19,9 @@ def create_document(current_user):
     if not title or not file or not permission_name:
         return jsonify({'message': 'Title, file, and permission are required'}), 400
 
+    if not file.filename.endswith('.png'):
+        return jsonify({'message': 'Only PNG files are allowed'}), 400
+
     document = Document(title=title, created_by=current_user.id)
     session.add(document)
     session.commit()
