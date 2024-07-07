@@ -5,8 +5,9 @@ import jwt
 from sqlalchemy.orm import sessionmaker
 from database.config import DATABASE_URL
 from database.base import User
+from database.setup import setup_database
 
-Session = sessionmaker(bind=DATABASE_URL)
+Session = setup_database(DATABASE_URL)
 session = Session()
 
 def token_required(f):
