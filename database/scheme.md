@@ -62,18 +62,15 @@ erDiagram
         UUID permission_id PK, FK
     }
 
-    User ||--o{ Document : "created_by"
-    User ||--o{ user_roles : ""
-    Role ||--o{ user_roles : ""
-    Role ||--o{ role_permissions : ""
-    Permission ||--o{ role_permissions : ""
-    Document ||--o{ Page : "pages"
-    Document ||--o{ DocumentAttribute : "attributes"
-    Document ||--o{ document_permissions : ""
-    Page }o--|| Document : "document_id"
-    Attribute ||--o{ DocumentAttribute : "document_attributes"
-    DocumentAttribute }o--|| Document : "document_id"
-    DocumentAttribute }o--|| Attribute : "attribute_id"
-    Permission ||--o{ document_permissions : ""
+    User ||--o{ Document : "creates"
+    User ||--o{ user_roles : "has"
+    Role ||--o{ user_roles : "keeps"
+    Role ||--o{ role_permissions : "keeps"
+    Permission ||--o{ role_permissions : "keeps"
+    Document ||--o{ Page : "contains"
+    Document ||--o{ DocumentAttribute : "has"
+    Document ||--o{ document_permissions : "has"
+    Attribute ||--o{ DocumentAttribute : "keeps"
+    Permission ||--o{ document_permissions : "keeps"
 
 ```
