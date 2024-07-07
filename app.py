@@ -13,6 +13,9 @@ CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 app.config['SECRET_KEY'] = SECRET_KEY
 
+# Увеличение размера загружаемого файла до 16 мегабайт
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
 app.register_blueprint(auth_bp)
 app.register_blueprint(document_bp)
 
