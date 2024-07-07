@@ -62,11 +62,6 @@ erDiagram
         UUID permission_id PK, FK
     }
 
-    document_roles {
-        UUID document_id PK, FK
-        UUID role_id PK, FK
-    }
-
     User ||--o{ Document : "created_by"
     User ||--o{ user_roles : ""
     Role ||--o{ user_roles : ""
