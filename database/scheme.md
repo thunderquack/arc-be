@@ -48,23 +48,23 @@ erDiagram
     }
 
     user_roles {
-        UUID user_id PK FK
-        UUID role_id PK FK
+        UUID user_id PK, FK
+        UUID role_id PK, FK
     }
     
     role_permissions {
-        UUID role_id PK FK
-        UUID permission_id PK FK
+        UUID role_id PK, FK
+        UUID permission_id PK, FK
     }
     
     document_permissions {
-        UUID document_id PK FK
-        UUID permission_id PK FK
+        UUID document_id PK, FK
+        UUID permission_id PK, FK
     }
 
     document_roles {
-        UUID document_id PK FK
-        UUID role_id PK FK
+        UUID document_id PK, FK
+        UUID role_id PK, FK
     }
 
     User ||--o{ Document : "created_by"
