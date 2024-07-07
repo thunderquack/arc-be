@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import sessionmaker
 from database.config import DATABASE_URL
-from database.base import Document, DocumentAttribute, Attribute, Permission
+from database.base import Document, DocumentAttribute, Attribute, Permission, User
 from routes.utils import token_required
 
 document_bp = Blueprint('document', __name__)
@@ -16,7 +16,7 @@ def create_document(current_user):
     attributes = data.getlist('attributes')
     permission_name = data.get('permission')
 
-    document = Document(title=title)
+    document = Document(title=title, created_by=current_user.id)
     session.add(document)
     session.commit()
 
