@@ -9,7 +9,8 @@ from messaging.producer import send_login_event
 from routes.utils import roles_required, token_required
 
 auth_bp = Blueprint('auth', __name__)
-session = setup_database(DATABASE_URL)
+Session = setup_database(DATABASE_URL)
+session = Session()
 
 @auth_bp.route('/api/login', methods=['POST'])
 def login():

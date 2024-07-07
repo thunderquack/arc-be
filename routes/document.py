@@ -68,3 +68,19 @@ def create_document(current_user):
         session.commit()
 
     return jsonify({'document_id': str(document.id)}), 201
+
+# Добавим этот маршрут в routes/document.py
+
+@document_bp.route('/api/documents', methods=['GET'])
+@token_required
+def get_documents(current_user):
+    documents = session.query(Document).all()
+    document_list = []
+    for doc in documents:
+        document_list.append({
+            'id': str(doc.id),
+            'title': doc.title,
+            'created_at': doc.created_at,
+            'pages': len(doc.pages),
+        })
+    return jsonify(document_list), 200
