@@ -95,9 +95,9 @@ def get_document(current_user, document_id):
         'id': str(document.id),
         'title': document.title,
         'created_at': document.created_at,
-        'creator': document.creator.username,  # Assuming User model has username field
+        'creator': document.creator.username,
         'pages': [{'page_number': page.page_number, 'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode()} for page in document.pages],
-        'summary': document.summary if hasattr(document, 'summary') else '',  # Adjust according to your actual attribute names
-        'recognizedText': document.recognized_text if hasattr(document, 'recognized_text') else ''  # Adjust according to your actual attribute names
+        'summary': document.summary if hasattr(document, 'summary') else '',
+        'recognizedText': document.recognized_text if hasattr(document, 'recognized_text') else '',
     }
     return jsonify(document_data), 200
