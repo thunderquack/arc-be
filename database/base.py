@@ -22,6 +22,9 @@ class Document(Base):
     # Document update date
     updated_at = Column(DateTime, default=datetime.datetime.now(datetime.UTC))
 
+    # User who created the document
+    created_by = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    
     # Relationship with pages
     pages = relationship('Page', order_by='Page.page_number', back_populates='document')
     
@@ -30,6 +33,9 @@ class Document(Base):
     
     # Relationship with permissions
     permissions = relationship('Permission', secondary='document_permissions', back_populates='documents')
+    
+    # Relationship with the creator
+    creator = relationship('User', back_populates='documents')
 
 # Document page
 class Page(Base):
@@ -125,6 +131,9 @@ class User(Base):
     
     # Relationship with roles
     roles = relationship('Role', secondary='user_roles', back_populates='users')
+    
+    # Relationship with created documents
+    documents = relationship('Document', back_populates='creator')
 
     def __init__(self, username, password_hash):
         self.username = username
