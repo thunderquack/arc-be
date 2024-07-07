@@ -1,3 +1,4 @@
+import base64
 from flask import Blueprint, request, jsonify
 from sqlalchemy.orm import sessionmaker
 from database.config import DATABASE_URL
@@ -69,8 +70,6 @@ def create_document(current_user):
 
     return jsonify({'document_id': str(document.id)}), 201
 
-# Добавим этот маршрут в routes/document.py
-
 @document_bp.route('/api/documents', methods=['GET'])
 @token_required
 def get_documents(current_user):
@@ -84,3 +83,21 @@ def get_documents(current_user):
             'pages': len(doc.pages),
         })
     return jsonify(document_list), 200
+
+@document_bp.route('/api/documents/<document_id>', methods=['GET'])
+@token_required
+def get_document(current_user, document_id):
+    document = session.query(Document).filter_by(id=document_id).first()
+    if not document:
+        return jsonify({'message': 'Document not found'}), 404
+
+    document_data = {
+        'id': str(document.id),
+        'title': document.title,
+        'created_at': document.created_at,
+        'creator': document.creator.username,  # Assuming User model has username field
+        'pages': [{'page_number': page.page_number, 'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode()} for page in document.pages],
+        'summary': document.summary if hasattr(document, 'summary') else '',  # Adjust according to your actual attribute names
+        'recognizedText': document.recognized_text if hasattr(document, 'recognized_text') else ''  # Adjust according to your actual attribute names
+    }
+    return jsonify(document_data), 200
