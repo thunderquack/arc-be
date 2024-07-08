@@ -49,13 +49,10 @@ def create_document(current_user):
         # Try to convert the image to PNG
         try:
             image = Image.open(file.stream)
-            if image.format != 'PNG':
-                image = image.convert('RGBA')
-                png_image_io = io.BytesIO()
-                image.save(png_image_io, format='PNG')
-                png_image_data = png_image_io.getvalue()
-            else:
-                png_image_data = file.read()
+            image = image.convert('RGBA')
+            png_image_io = io.BytesIO()
+            image.save(png_image_io, format='PNG')
+            png_image_data = png_image_io.getvalue()
         except Exception as e:
             return jsonify({'message': 'Invalid image file'}), 400
 
@@ -117,9 +114,6 @@ def replace_page(current_user, document_id, page_id):
         if page:
             # Convert image to PNG if it's not already in PNG format
             try:
-                from PIL import Image
-                import io
-                
                 image = Image.open(file.stream)
                 output = io.BytesIO()
                 image.save(output, format='PNG')
