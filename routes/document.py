@@ -134,3 +134,40 @@ def replace_page(current_user, document_id, page_id):
             return jsonify({'message': 'Page not found'}), 404
     else:
         return jsonify({'message': 'File not provided'}), 400
+    
+@document_bp.route('/api/documents/<document_id>/pages', methods=['POST'])
+@token_required
+def add_page(current_user, document_id):
+    document = session.query(Document).filter_by(id=document_id).first()
+    if not document:
+        return jsonify({'message': 'Document not found'}), 404
+
+    file = request.files['file']
+    if file:
+        try:
+            image = Image.open(file.stream)
+            output = io.BytesIO()
+            image.save(output, format='PNG')
+            png_image_data = output.getvalue()
+                
+        except Exception as e:
+            return jsonify({'message': 'Invalid image file'}), 400
+
+        page_number = len(document.pages) + 1
+
+        page = Page(
+            document_id=document.id,
+            page_number=page_number,
+            image_data=png_image_data,
+            created_at=datetime.datetime.now(datetime.UTC)
+        )
+        session.add(page)
+        session.commit()
+
+        return jsonify({'message': 'Page added successfully', 'page': {
+            'page_number': page.page_number,
+            'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
+            'page_id': page.id,
+        }}), 201
+
+    return jsonify({'message': 'No file provided'}), 400    
