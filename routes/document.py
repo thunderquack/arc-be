@@ -147,7 +147,7 @@ def add_page(current_user, document_id):
         except Exception as e:
             return jsonify({'message': 'Invalid image file'}), 400
 
-        page_number = len(document.pages) + 1
+        page_number = max([p.page_number for p in document.pages] + [0]) + 1
 
         page = Page(
             document_id=document.id,
