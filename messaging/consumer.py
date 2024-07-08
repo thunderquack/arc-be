@@ -9,3 +9,6 @@ def consume_events(queue_name, callback):
 
 def login_events_callback(ch, method, properties, body):
     print(f"Received login event: {body}")
+
+def page_update_events_callback(ch, method, properties, body):
+    print(f"Received page update event: {body}")
