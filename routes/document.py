@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from database.config import DATABASE_URL
 from database.base import Document, DocumentAttribute, Attribute, Permission, User, Page
 from database.setup import setup_database
+from messaging.producer import send_page_update_event
 from routes.utils import token_required
 from PIL import Image
 import io
@@ -64,7 +65,8 @@ def create_document(current_user):
         )
         session.add(page)
         session.commit()
-
+        send_page_update_event(page.id)
+        
     return jsonify({'document_id': str(document.id)}), 201
 
 @document_bp.route('/api/documents', methods=['GET'])
@@ -123,6 +125,7 @@ def replace_page(current_user, document_id, page_id):
             
             page.created_at = datetime.datetime.now(datetime.UTC)
             session.commit()
+            send_page_update_event(page.id)
             return jsonify({'message': 'Page replaced successfully'}), 200
         else:
             return jsonify({'message': 'Page not found'}), 404
@@ -157,7 +160,8 @@ def add_page(current_user, document_id):
         )
         session.add(page)
         session.commit()
-
+        send_page_update_event(page.id)
+        
         return jsonify({'message': 'Page added successfully', 'page': {
             'page_number': page.page_number,
             'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
