@@ -165,3 +165,14 @@ def add_page(current_user, document_id):
         }}), 201
 
     return jsonify({'message': 'No file provided'}), 400    
+
+@document_bp.route('/api/documents/<document_id>/pages/<page_id>', methods=['DELETE'])
+@token_required
+def delete_page(current_user, document_id, page_id):
+    page = session.query(Page).filter_by(id=page_id, document_id=document_id).first()
+    if not page:
+        return jsonify({'message': 'Page not found'}), 404
+
+    session.delete(page)
+    session.commit()
+    return jsonify({'message': 'Page deleted successfully'}), 200
