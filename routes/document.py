@@ -122,7 +122,7 @@ def replace_page(current_user, document_id, page_id):
                 return jsonify({'message': 'Failed to process the image: ' + str(e)}), 400
             
             page.created_at = datetime.datetime.now(datetime.UTC)
-            #session.commit()
+            session.commit()
             return jsonify({'message': 'Page replaced successfully'}), 200
         else:
             return jsonify({'message': 'Page not found'}), 404
