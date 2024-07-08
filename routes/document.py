@@ -101,3 +101,30 @@ def get_document(current_user, document_id):
         'recognizedText': document.recognized_text if hasattr(document, 'recognized_text') else '',
     }
     return jsonify(document_data), 200
+
+@document_bp.route('/api/documents/<document_id>/pages/<page_id>', methods=['PUT'])
+@token_required
+def replace_page(current_user, document_id, page_id):
+    file = request.files['file']
+    if file:
+        page = session.query(Page).filter_by(id=page_id, document_id=document_id).first()
+        if page:
+            # Convert image to PNG if it's not already in PNG format
+            try:
+                from PIL import Image
+                import io
+                
+                image = Image.open(file.stream)
+                output = io.BytesIO()
+                image.save(output, format='PNG')
+                page.image_data = output.getvalue()
+            except Exception as e:
+                return jsonify({'message': 'Failed to process the image: ' + str(e)}), 400
+            
+            page.created_at = datetime.datetime.now(datetime.UTC)
+            #session.commit()
+            return jsonify({'message': 'Page replaced successfully'}), 200
+        else:
+            return jsonify({'message': 'Page not found'}), 404
+    else:
+        return jsonify({'message': 'File not provided'}), 400
