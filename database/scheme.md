@@ -31,6 +31,7 @@ erDiagram
         UUID document_id FK
         Integer page_number
         LargeBinary image_data
+        LargeBinary thumbnail_data
         DateTime created_at
     }
     

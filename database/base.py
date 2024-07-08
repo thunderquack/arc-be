@@ -59,6 +59,9 @@ class Page(Base):
     # Relationship with document
     document = relationship('Document', back_populates='pages')
 
+    # Thumbnail data
+    thumbnail_data = Column(LargeBinary, nullable=True)
+
     __table_args__ = (
         UniqueConstraint('document_id', 'page_number', name='unique_document_page'),
     )
