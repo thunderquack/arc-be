@@ -2,7 +2,8 @@ import datetime
 import uuid
 from sqlalchemy import UUID, Column, DateTime, ForeignKey, Integer, LargeBinary, String, Table, Text, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
+from typing import List
 
 Base = declarative_base()
 
@@ -26,7 +27,7 @@ class Document(Base):
     created_by = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     
     # Relationship with pages
-    pages = relationship('Page', order_by='Page.page_number', back_populates='document')
+    pages: Mapped[List['Page']] = relationship('Page', order_by='Page.page_number', back_populates='document')
     
     # Relationship with attributes
     attributes = relationship('DocumentAttribute', back_populates='document')

@@ -100,6 +100,7 @@ def get_document(current_user, document_id):
                         'page_number': page.page_number,
                         'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
                         'page_id': page.id,
+                        'thumbnail_data': 'data:image/png;base64,' + base64.b64encode(page.thumbnail_data).decode() if page.thumbnail_data else '',
                     } for page in document.pages
                 ],
         'summary': document.summary if hasattr(document, 'summary') else '',
@@ -161,7 +162,7 @@ def add_page(current_user, document_id):
         session.add(page)
         session.commit()
         send_page_update_event(page.id)
-        
+
         return jsonify({'message': 'Page added successfully', 'page': {
             'page_number': page.page_number,
             'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
