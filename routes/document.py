@@ -101,6 +101,7 @@ def get_document(current_user, document_id):
                         'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
                         'page_id': page.id,
                         'thumbnail_data': 'data:image/png;base64,' + base64.b64encode(page.thumbnail_data).decode() if page.thumbnail_data else '',
+                        'recognized_text': page.recognized_text,
                     } for page in document.pages
                 ],
         'summary': document.summary if hasattr(document, 'summary') else '',
