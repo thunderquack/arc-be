@@ -1,8 +1,11 @@
+import json
 from database.base import Page
 from database.config import DATABASE_URL
 from database.setup import setup_database
 from internal.utils import resize_image
-from messaging.utils import get_rabbitmq_connection, declare_queues
+from messaging.utils import get_rabbitmq_connection, declare_queues, TESSERACT_URL
+import requests
+import io
 
 Session = setup_database(DATABASE_URL)
 session = Session()
@@ -25,6 +28,16 @@ def page_update_events_callback(ch, method, properties, body):
         try:
             thumbnail_data = resize_image(page.image_data, 170)
             page.thumbnail_data = thumbnail_data
+            file_like_object = io.BytesIO(page.image_data)
+            file_like_object.name = 'image.png'
+            files = {
+                'options': (None, str({})),
+                'file': ('image.png', file_like_object, 'image/png')
+            }
+            response = requests.post(TESSERACT_URL, files=files)
+            if response.ok:
+                recognized = json.loads(response.text)
+                page.recognized_text=str(recognized['data']['stdout']).replace('\\\\n','\n')
             session.commit()
             print(f"Thumbnail for page {page_id} updated successfully.")
         except Exception as e:

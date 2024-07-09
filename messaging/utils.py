@@ -3,6 +3,7 @@ import pika
 RABBITMQ_URL = 'amqp://guest:guest@rabbitmq:5672/'
 LOGIN_EVENTS_QUEUE = 'login_events'
 PAGE_UPDATE_EVENTS = 'page_update_events'
+TESSERACT_URL = 'http://tesseract:8884/tesseract'
 
 def get_rabbitmq_connection():
     parameters = pika.URLParameters(RABBITMQ_URL)
