@@ -63,6 +63,9 @@ class Page(Base):
     # Thumbnail data
     thumbnail_data = Column(LargeBinary, nullable=True)
 
+    # Recognized text
+    recognized_text = Column(Text, nullable=True)
+
     __table_args__ = (
         UniqueConstraint('document_id', 'page_number', name='unique_document_page'),
     )

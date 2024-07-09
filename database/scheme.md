@@ -32,6 +32,7 @@ erDiagram
         Integer page_number
         LargeBinary image_data
         LargeBinary thumbnail_data
+        Text recognized_text
         DateTime created_at
     }
     
