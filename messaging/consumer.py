@@ -1,4 +1,6 @@
 import json
+
+from langdetect import detect
 from database.base import Page
 from database.config import DATABASE_URL
 from database.setup import setup_database
@@ -37,7 +39,9 @@ def page_update_events_callback(ch, method, properties, body):
             response = requests.post(TESSERACT_URL, files=files)
             if response.ok:
                 recognized = json.loads(response.text)
-                page.recognized_text=str(recognized['data']['stdout']).replace('\\\\n','\n')
+                recognized_text = str(recognized['data']['stdout']).replace('\\\\n','\n')
+                page.recognized_text = recognized_text
+                page.language = detect(recognized_text)
             session.commit()
             print(f"Thumbnail for page {page_id} updated successfully.")
         except Exception as e:
