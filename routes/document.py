@@ -181,3 +181,20 @@ def delete_page(current_user, document_id, page_id):
     session.delete(page)
     session.commit()
     return jsonify({'message': 'Page deleted successfully'}), 200
+
+@document_bp.route('/api/documents/<document_id>/reorder-pages', methods=['PUT'])
+@token_required
+def reorder_pages(current_user, document_id):
+    data = request.get_json()
+    if not data:
+        return jsonify({'message': 'No data provided'}), 400
+
+    for page_data in data:
+        page = session.query(Page).filter_by(id=page_data['page_id'], document_id=document_id).first()
+        if page:
+            page.page_number = page_data['page_number']
+        else:
+            return jsonify({'message': f'Page with id {page_data["page_id"]} not found'}), 404
+
+    session.commit()
+    return jsonify({'message': 'Pages reordered successfully'}), 200
