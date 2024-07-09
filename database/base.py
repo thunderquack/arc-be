@@ -66,6 +66,9 @@ class Page(Base):
     # Recognized text
     recognized_text = Column(Text, nullable=True)
 
+    # Recognized language
+    language = Column(String(2))
+
     __table_args__ = (
         UniqueConstraint('document_id', 'page_number', name='unique_document_page'),
     )

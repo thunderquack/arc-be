@@ -2,7 +2,7 @@
 
 ## Migration creation
 
-alembic revision --autogenerate -m "user table"
+alembic revision --autogenerate -m ""
 
 ## Updating the database
 
