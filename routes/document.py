@@ -186,15 +186,28 @@ def delete_page(current_user, document_id, page_id):
 @token_required
 def reorder_pages(current_user, document_id):
     data = request.get_json()
-    if not data:
-        return jsonify({'message': 'No data provided'}), 400
+    if not data or not isinstance(data, list):
+        return jsonify({'message': 'Invalid data'}), 400
 
-    for page_data in data:
-        page = session.query(Page).filter_by(id=page_data['page_id'], document_id=document_id).first()
-        if page:
-            page.page_number = page_data['page_number']
-        else:
-            return jsonify({'message': f'Page with id {page_data["page_id"]} not found'}), 404
+    try:
+        # First pass: assign temporary negative page numbers
+        for page_data in data:
+            page = session.query(Page).filter_by(id=page_data['page_id'], document_id=document_id).first()
+            if page:
+                page.page_number = -page_data['new_order']
+        
+        session.flush()
 
-    session.commit()
+        # Second pass: assign correct page numbers
+        for page_data in data:
+            page = session.query(Page).filter_by(id=page_data['page_id'], document_id=document_id).first()
+            if page:
+                page.page_number = page_data['new_order']
+
+        # Commit the transaction
+        session.commit()
+    except Exception as e:
+        session.rollback()
+        return jsonify({'message': f'Failed to reorder pages: {str(e)}'}), 500
+
     return jsonify({'message': 'Pages reordered successfully'}), 200
