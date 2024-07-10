@@ -96,15 +96,15 @@ def get_document(current_user, document_id):
         'title': document.title,
         'created_at': document.created_at,
         'creator': document.creator.username,
-        'pages': [
-                    {
-                        'page_number': page.page_number,
-                        'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
-                        'page_id': page.id,
-                        'thumbnail_data': 'data:image/png;base64,' + base64.b64encode(page.thumbnail_data).decode() if page.thumbnail_data else '',
-                        'recognized_text': page.recognized_text,
-                    } for page in document.pages
-                ],
+        'pages': sorted([
+            {
+                'page_number': page.page_number,
+                'image_data': 'data:image/png;base64,' + base64.b64encode(page.image_data).decode(),
+                'page_id': page.id,
+                'thumbnail_data': 'data:image/png;base64,' + base64.b64encode(page.thumbnail_data).decode() if page.thumbnail_data else '',
+                'recognized_text': page.recognized_text,
+            } for page in document.pages
+        ], key=lambda x: x['page_number']),
         'summary': document.summary if hasattr(document, 'summary') else '',
         'recognizedText': document.recognized_text if hasattr(document, 'recognized_text') else '',
     }
