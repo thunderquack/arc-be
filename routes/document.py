@@ -55,6 +55,7 @@ def create_document(current_user):
             png_image_io = io.BytesIO()
             image.save(png_image_io, format='PNG')
             png_image_data = png_image_io.getvalue()
+            thumbnail_data = resize_image(png_image_data, 170)
         except Exception as e:
             return jsonify({'message': 'Invalid image file'}), 400
 
@@ -62,7 +63,8 @@ def create_document(current_user):
             document_id=document.id,
             page_number=1,  # For simplicity, assigning page number 1
             image_data=png_image_data,
-            created_at=datetime.datetime.now(datetime.UTC)
+            created_at=datetime.datetime.now(datetime.UTC),
+            thumbnail_data=thumbnail_data,
         )
         session.add(page)
         session.commit()
@@ -151,6 +153,7 @@ def add_page(current_user, document_id):
             output = io.BytesIO()
             image.save(output, format='PNG')
             png_image_data = output.getvalue()
+            thumbnail_data = resize_image(png_image_data, 170)
                 
         except Exception as e:
             return jsonify({'message': 'Invalid image file'}), 400
@@ -161,7 +164,8 @@ def add_page(current_user, document_id):
             document_id=document.id,
             page_number=page_number,
             image_data=png_image_data,
-            created_at=datetime.datetime.now(datetime.UTC)
+            created_at=datetime.datetime.now(datetime.UTC),
+            thumbnail_data=thumbnail_data,
         )
         session.add(page)
         session.commit()
