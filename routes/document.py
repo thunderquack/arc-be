@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from database.config import DATABASE_URL
 from database.base import Document, DocumentAttribute, Attribute, Permission, User, Page
 from database.setup import setup_database
+from internal.utils import resize_image
 from messaging.producer import send_page_update_event
 from routes.utils import token_required
 from PIL import Image
@@ -122,6 +123,8 @@ def replace_page(current_user, document_id, page_id):
                 output = io.BytesIO()
                 image.save(output, format='PNG')
                 page.image_data = output.getvalue()
+                thumbnail_data = resize_image(page.image_data, 170)
+                page.thumbnail_data = thumbnail_data
             except Exception as e:
                 return jsonify({'message': 'Failed to process the image: ' + str(e)}), 400
             

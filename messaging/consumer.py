@@ -4,7 +4,6 @@ from langdetect import detect
 from database.base import Page
 from database.config import DATABASE_URL
 from database.setup import setup_database
-from internal.utils import resize_image
 from messaging.utils import get_rabbitmq_connection, declare_queues, TESSERACT_URL
 import requests
 import io
@@ -28,8 +27,6 @@ def page_update_events_callback(ch, method, properties, body):
 
     if page and page.image_data:
         try:
-            thumbnail_data = resize_image(page.image_data, 170)
-            page.thumbnail_data = thumbnail_data
             file_like_object = io.BytesIO(page.image_data)
             file_like_object.name = 'image.png'
             files = {
