@@ -215,3 +215,13 @@ def reorder_pages(current_user, document_id):
         return jsonify({'message': f'Failed to reorder pages: {str(e)}'}), 500
 
     return jsonify({'message': 'Pages reordered successfully'}), 200
+
+@document_bp.route('/api/documents/<document_id>/recognized-text', methods=['GET'])
+@token_required
+def get_recognized_text(current_user, document_id):
+    document = session.query(Document).filter_by(id=document_id).first()
+    if not document:
+        return jsonify({'message': 'Document not found'}), 404
+
+    recognized_text = '\n\n'.join([page.recognized_text for page in sorted(document.pages, key=lambda p: p.page_number) if page.recognized_text])
+    return jsonify({'recognized_text': recognized_text}), 200
