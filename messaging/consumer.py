@@ -11,15 +11,19 @@ import io
 Session = setup_database(DATABASE_URL)
 session = Session()
 
+
 def consume_events(queue_name, callback):
     connection, channel = get_rabbitmq_connection()
     declare_queues(channel)
-    channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(
+        queue=queue_name, on_message_callback=callback, auto_ack=True)
     print(f'Waiting for {queue_name} events. To exit press CTRL+C')
     channel.start_consuming()
 
+
 def login_events_callback(ch, method, properties, body):
     print(f"Received login event: {body}")
+
 
 def page_update_events_callback(ch, method, properties, body):
     page_id = body.decode('utf-8')
@@ -36,7 +40,8 @@ def page_update_events_callback(ch, method, properties, body):
             response = requests.post(TESSERACT_URL, files=files)
             if response.ok:
                 recognized = json.loads(response.text)
-                recognized_text = str(recognized['data']['stdout']).replace('\\\\n','\n')
+                recognized_text = str(
+                    recognized['data']['stdout']).replace('\\\\n', '\n')
                 page.recognized_text = recognized_text
                 page.language = detect(recognized_text)
             session.commit()
@@ -45,4 +50,4 @@ def page_update_events_callback(ch, method, properties, body):
             print(f"Failed to update thumbnail for page {page_id}: {str(e)}")
             session.rollback()
     else:
-        print(f"Page {page_id} not found or has no image data.")    
+        print(f"Page {page_id} not found or has no image data.")
