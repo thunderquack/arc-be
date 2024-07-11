@@ -1,3 +1,4 @@
+import time
 import pika
 
 RABBITMQ_URL = 'amqp://guest:guest@rabbitmq:5672/'
@@ -14,3 +15,17 @@ def get_rabbitmq_connection():
 def declare_queues(channel):
     channel.queue_declare(queue=LOGIN_EVENTS_QUEUE)
     channel.queue_declare(queue=PAGE_UPDATE_EVENTS)
+
+def wait_for_rabbitmq(timeout):
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        try:
+            connection = pika.BlockingConnection(pika.URLParameters(RABBITMQ_URL))
+            connection.close()
+            print("RabbitMQ is up and running.")
+            return True
+        except pika.exceptions.AMQPConnectionError:
+            print("Waiting for RabbitMQ...")
+            time.sleep(5)
+    print("Timeout waiting for RabbitMQ.")
+    return False

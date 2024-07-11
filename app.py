@@ -3,7 +3,7 @@ from flask import Flask
 from flask_cors import CORS
 import ptvsd
 from database.config import SECRET_KEY
-from messaging.utils import LOGIN_EVENTS_QUEUE, PAGE_UPDATE_EVENTS
+from messaging.utils import LOGIN_EVENTS_QUEUE, PAGE_UPDATE_EVENTS, wait_for_rabbitmq
 from routes.auth import auth_bp
 from routes.document import document_bp
 from messaging.consumer import consume_events, login_events_callback, page_update_events_callback
@@ -25,6 +25,8 @@ app.register_blueprint(auth_bp)
 app.register_blueprint(document_bp)
 
 if __name__ == '__main__':
+    if (not wait_for_rabbitmq(60)):
+        exit(1)
     threading.Thread(target=lambda: consume_events(LOGIN_EVENTS_QUEUE, login_events_callback), daemon=True).start()
     threading.Thread(target=lambda: consume_events(PAGE_UPDATE_EVENTS, page_update_events_callback), daemon=True).start()
     app.run(host='0.0.0.0', port=3000)
