@@ -3,11 +3,13 @@ import redis
 import uuid
 
 from messaging.producer import send_process_text_event
+from routes.utils import token_required
 
 ai_bp = Blueprint('ai', __name__)
 redis_client = redis.StrictRedis(host='redis', port=6379, db=0)
 
 @ai_bp.route('/api/process_text', methods=['POST'])
+@token_required
 def process_text():
     data = request.get_json()
     text = data.get('text')
