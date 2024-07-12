@@ -2,7 +2,6 @@ import datetime
 from functools import wraps
 from flask import request, jsonify, current_app
 import jwt
-from sqlalchemy.orm import sessionmaker
 from database.config import DATABASE_URL
 from database.base import User
 from database.setup import setup_database

@@ -1,6 +1,5 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify
 import redis
-import uuid
 
 task_bp = Blueprint('task', __name__)
 redis_client = redis.StrictRedis(host='redis', port=6379, db=0)

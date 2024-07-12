@@ -10,7 +10,7 @@ redis_client = redis.StrictRedis(host='redis', port=6379, db=0)
 
 @ai_bp.route('/api/process_text', methods=['POST'])
 @token_required
-def process_text(current_user):  # Добавляем current_user
+def process_text(current_user):
     data = request.get_json()
     text = data.get('text')
     if not text:
