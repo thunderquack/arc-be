@@ -1,5 +1,5 @@
 from database.config import DATABASE_URL
-from messaging.utils import get_rabbitmq_connection, declare_queues, PAGE_UPDATE_EVENTS, LOGIN_EVENTS_QUEUE
+from messaging.utils import AI_EVENTS, get_rabbitmq_connection, declare_queues, PAGE_UPDATE_EVENTS, LOGIN_EVENTS_QUEUE
 import datetime
 
 def send_message_to_queue(queue_name, message):
@@ -18,3 +18,7 @@ def send_login_event(username):
 def send_page_update_event(page_id):
     message = f'{page_id}'
     send_message_to_queue(PAGE_UPDATE_EVENTS, message)
+
+def send_process_text_event(id):
+    message = {'type': 'process_text', 'id': id}
+    send_message_to_queue(AI_EVENTS, message)
