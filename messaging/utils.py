@@ -4,6 +4,7 @@ import pika
 RABBITMQ_URL = 'amqp://guest:guest@rabbitmq:5672/'
 LOGIN_EVENTS_QUEUE = 'login_events'
 PAGE_UPDATE_EVENTS = 'page_update_events'
+AI_EVENTS = 'ai_events'
 TESSERACT_URL = 'http://tesseract:8884/tesseract'
 
 def get_rabbitmq_connection():
@@ -15,6 +16,7 @@ def get_rabbitmq_connection():
 def declare_queues(channel):
     channel.queue_declare(queue=LOGIN_EVENTS_QUEUE)
     channel.queue_declare(queue=PAGE_UPDATE_EVENTS)
+    channel.queue_declare(queue=AI_EVENTS)
 
 def wait_for_rabbitmq(timeout):
     start_time = time.time()
