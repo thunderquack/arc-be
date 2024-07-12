@@ -4,8 +4,7 @@ from flask_cors import CORS
 import ptvsd
 from database.config import SECRET_KEY
 from messaging.utils import LOGIN_EVENTS_QUEUE, PAGE_UPDATE_EVENTS, wait_for_rabbitmq
-from routes.auth import auth_bp
-from routes.document import document_bp
+from routes import auth_bp, document_bp, task_bp, ai_bp
 from messaging.consumer import consume_events, login_events_callback, page_update_events_callback
 
 app = Flask(__name__)
@@ -23,6 +22,8 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(document_bp)
+app.register_blueprint(task_bp)
+app.register_blueprint(ai_bp)
 
 if __name__ == '__main__':
     if (not wait_for_rabbitmq(60)):
