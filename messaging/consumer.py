@@ -33,8 +33,10 @@ def page_update_events_callback(ch, method, properties, body):
         try:
             file_like_object = io.BytesIO(page.image_data)
             file_like_object.name = 'image.png'
+            options = {"languages": ['osd']}
+            options_json = json.dumps(options)
             files = {
-                'options': (None, str({})),
+                'options': (None, options_json),
                 'file': ('image.png', file_like_object, 'image/png')
             }
             response = requests.post(TESSERACT_URL, files=files)
