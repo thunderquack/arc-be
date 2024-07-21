@@ -48,7 +48,8 @@ def page_update_events_callback(ch, method, properties, body):
                 page.language = detect(recognized_text)
 
                 # Second run: with detected language
-                lang = pycountry.languages.get(iso639_1_code=page.language)
+                lang = pycountry.languages.get(alpha_2=page.language).alpha_3
+                file_like_object.seek(0)
                 options = {"languages": [lang]}
                 options_json = json.dumps(options)
                 files = {
