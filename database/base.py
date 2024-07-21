@@ -66,6 +66,9 @@ class Page(Base):
     # Recognized text
     recognized_text = Column(Text, nullable=True)
 
+    # Processed text
+    processed_text = Column(Text, nullable=True)
+
     # Recognized language
     language = Column(String(2))
 
