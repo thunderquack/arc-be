@@ -1,6 +1,7 @@
 import json
 
 from langdetect import detect
+import pycountry
 from database.base import Page
 from database.config import DATABASE_URL
 from database.setup import setup_database
@@ -33,7 +34,7 @@ def page_update_events_callback(ch, method, properties, body):
         try:
             file_like_object = io.BytesIO(page.image_data)
             file_like_object.name = 'image.png'
-            options = {"languages": ['osd']}
+            options = {}
             options_json = json.dumps(options)
             files = {
                 'options': (None, options_json),
@@ -44,8 +45,22 @@ def page_update_events_callback(ch, method, properties, body):
                 recognized = json.loads(response.text)
                 recognized_text = str(
                     recognized['data']['stdout']).replace('\\\\n', '\n')
-                page.recognized_text = recognized_text
                 page.language = detect(recognized_text)
+
+                # Second run: with detected language
+                lang = pycountry.languages.get(iso639_1_code=page.language)
+                options = {"languages": [lang]}
+                options_json = json.dumps(options)
+                files = {
+                    'options': (None, options_json),
+                    'file': ('image.png', file_like_object, 'image/png')
+                }
+                response = requests.post(TESSERACT_URL, files=files)
+                recognized = json.loads(response.text)
+                recognized_text = str(
+                    recognized['data']['stdout']).replace('\\\\n', '\n')
+                page.recognized_text = recognized_text
+
             session.commit()
             print(f"Thumbnail for page {page_id} updated successfully.")
         except Exception as e:
